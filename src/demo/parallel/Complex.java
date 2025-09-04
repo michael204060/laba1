@@ -45,19 +45,35 @@ package demo.parallel;
  * @author Alexander Kouznetsov, Tristan Yan
  */
 public class Complex {
-    
+
     private double re;   // the real part
     private double im;   // the imaginary part
 
-    /** 
+    /**
      * create a new object with the given real and imaginary parts
-     * 
+     *
      * @param real a complex number real part
      * @param imag a complex number imaginary part 
      */
     public Complex(double real, double imag) {
         re = real;
         im = imag;
+    }
+
+    /**
+     * Get real part of complex number
+     * @return real part
+     */
+    public double getRe() {
+        return re;
+    }
+
+    /**
+     * Get imaginary part of complex number
+     * @return imaginary part
+     */
+    public double getIm() {
+        return im;
     }
 
     /**
@@ -68,6 +84,17 @@ public class Complex {
     public Complex plus(Complex b) {
         re += b.re;
         im += b.im;
+        return this;
+    }
+
+    /**
+     * Subtract operation.
+     * @param b subtrahend
+     * @return this Complex object whose value is (this - b)
+     */
+    public Complex minus(Complex b) {
+        re -= b.re;
+        im -= b.im;
         return this;
     }
 
@@ -86,11 +113,87 @@ public class Complex {
     }
 
     /**
-     * Square of Complex object's length, we're using square of length to 
+     * Divide operation.
+     * @param b divisor
+     * @return this Complex object whose value is this / b
+     */
+    public Complex divide(Complex b) {
+        double denominator = b.re * b.re + b.im * b.im;
+        double real = (re * b.re + im * b.im) / denominator;
+        double imag = (im * b.re - re * b.im) / denominator;
+        re = real;
+        im = imag;
+        return this;
+    }
+
+    /**
+     * Power operation (this raised to the power of n)
+     * @param n exponent
+     * @return this Complex object whose value is this^n
+     */
+    public Complex power(int n) {
+        if (n == 0) {
+            re = 1;
+            im = 0;
+            return this;
+        }
+
+        Complex result = new Complex(1, 0);
+        Complex base = new Complex(re, im);
+
+        for (int i = 0; i < Math.abs(n); i++) {
+            result.times(base);
+        }
+
+        if (n < 0) {
+            result = new Complex(1, 0).divide(result);
+        }
+
+        re = result.re;
+        im = result.im;
+        return this;
+    }
+
+    /**
+     * Calculate sine of complex number
+     * @return new Complex object with sine value
+     */
+    public Complex sin() {
+        double real = Math.sin(re) * Math.cosh(im);
+        double imag = Math.cos(re) * Math.sinh(im);
+        re = real;
+        im = imag;
+        return this;
+    }
+
+    /**
+     * Square of Complex object's length, we're using square of length to
      * eliminate the computation of square root
      * @return square of length
-    */
+     */
     public double lengthSQ() {
         return re * re + im * im;
+    }
+
+    /**
+     * Create a copy of this complex number
+     * @return new Complex object with same values
+     */
+    public Complex copy() {
+        return new Complex(re, im);
+    }
+
+    @Override
+    public String toString() {
+        return re + " + " + im + "i";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Complex complex = (Complex) obj;
+        return Math.abs(complex.re - re) < 1e-10 &&
+                Math.abs(complex.im - im) < 1e-10;
     }
 }
